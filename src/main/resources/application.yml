@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      dialect=org:
+        hibernate:
+          dialect: PostgreSQLDialect
+      ddl-auto: update
+  liquibase:
+    change-log: classpath:db/db_master.xml
+    default-schema: public
+    enabled: true
+server:
+  port: 8080
