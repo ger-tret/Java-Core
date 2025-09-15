@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.test.task.trainee.stream</groupId>
-	<artifactId>StreamApi</artifactId>
+	<artifactId>UserService</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>StreamApi</name>
-	<description>Demo project for Spring Boot</description>
+	<name>UserService</name>
+	<description></description>
 	<url/>
 	<licenses>
 		<license/>
