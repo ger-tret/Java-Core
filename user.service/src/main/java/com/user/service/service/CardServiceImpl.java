@@ -22,8 +22,8 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class CardServiceImpl implements CardService {
 
-    private CardRepository repository;
-    private CardMetadataMapper mapper;
+    private final CardRepository repository;
+    private final CardMetadataMapper mapper;
 
 
     @Transactional

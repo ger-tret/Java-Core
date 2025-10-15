@@ -18,11 +18,11 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private UserRepository repository;
-    private UserMapper mapper;
+    private final UserRepository repository;
+    private final UserMapper mapper;
 
 
     @Transactional
