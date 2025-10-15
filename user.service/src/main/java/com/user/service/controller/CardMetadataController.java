@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cards")
+@RequestMapping("api/v1/cards")
 @Validated
 public class CardMetadataController {
 
-    private CardServiceImpl service;
+    private final CardServiceImpl service;
 
     @Autowired
     CardMetadataController(CardServiceImpl cardService){
@@ -26,32 +26,32 @@ public class CardMetadataController {
     }
 
     @PostMapping
-    ResponseEntity<Long> createCard(@RequestBody @Valid CardMetadataDto cardDto){
+    public ResponseEntity<Long> createCard(@RequestBody @Valid CardMetadataDto cardDto){
         return ResponseEntity.ok((service.createCard(cardDto)));
     }
 
     @PostMapping("/update")
-    ResponseEntity<Long> updateCard(@RequestParam("id") Long id, @RequestBody @Valid CardMetadataDto cardDto){
+    public ResponseEntity<Long> updateCard(@RequestParam("id") Long id, @RequestBody @Valid CardMetadataDto cardDto){
         return ResponseEntity.ok((service.updateCardMetadata(id, cardDto)));
     }
 
     @GetMapping
-    ResponseEntity<CardMetadataDto> findCard(@RequestParam("id") Long id){
+    public ResponseEntity<CardMetadataDto> findCard(@RequestParam("id") Long id){
         return ResponseEntity.ok(service.findCardMetadataById(id));
     }
 
-    @GetMapping("/findbycsv")
-    ResponseEntity<List<CardMetadata>> findCardsByIdCsv(@RequestParam("id") @IdCsvValidation String id){
+    @GetMapping
+    public ResponseEntity<List<CardMetadata>> findCardsByIdCsv(@RequestParam("id") @IdCsvValidation String id){
         return ResponseEntity.ok(((service.findCardsMetadatasByIdCsv(id))));
     }
 
-    @GetMapping("/findbyusemail")
-    ResponseEntity<List<CardMetadata>> findCardsByUserEmail(@RequestParam("email") String email){
+    @GetMapping
+    public ResponseEntity<List<CardMetadata>> findCardsByUserEmail(@RequestParam("email") String email){
         return ResponseEntity.ok(service.getCardsByUserEmail(email));
     }
 
     @DeleteMapping
-    ResponseEntity<Long> deleteCard(@RequestParam("id") Long id){
+    public ResponseEntity<Long> deleteCard(@RequestParam("id") Long id){
         return ResponseEntity.ok(service.deleteCardMetadata(id));
     }
 

@@ -26,27 +26,27 @@ public class UserController {
     }
 
     @PostMapping
-    ResponseEntity<Long> createUserInstance(@RequestBody @Valid UserDto userDto){
+    public ResponseEntity<Long> createUserInstance(@RequestBody @Valid UserDto userDto){
         return ResponseEntity.ok((service.createUser(userDto)));
     }
 
     @PostMapping("/update")
-    ResponseEntity<Long> updateUserInstance(@RequestParam("id") Long id, @RequestBody @Valid UserDto userDto){
+    public ResponseEntity<Long> updateUserInstance(@RequestParam("id") Long id, @RequestBody @Valid UserDto userDto){
         return ResponseEntity.ok((service.updateUser(id, userDto)));
     }
 
     @GetMapping("/find")
-    ResponseEntity<UserDto> findUser(@RequestParam("id") Long id){
+    public ResponseEntity<UserDto> findUser(@RequestParam("id") Long id){
         return ResponseEntity.ok(service.findUserById(id));
     }
 
     @DeleteMapping
-    ResponseEntity<Long> deleteUser(@RequestParam("id") Long id){
+    public ResponseEntity<Long> deleteUser(@RequestParam("id") Long id){
         return ResponseEntity.ok(service.deleteUser(id));
     }
 
     @GetMapping("/findbycsv")
-    ResponseEntity<List<User>> findUsersByIdCsv(@RequestParam("id") @IdCsvValidation String id){
+    public ResponseEntity<List<User>> findUsersByIdCsv(@RequestParam("id") @IdCsvValidation String id){
         return ResponseEntity.ok(((service.findUsersByIdCsv(id))));
     }
 
