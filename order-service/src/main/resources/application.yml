@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/order_db
+    username: serviceuser
+    password: 123456789
+  cloud:
+    openfeign:
+      client:
+        config:
+          user-service:
+            url: http://localhost:8080
+            connectTimeout: 5000
+            readTimeout: 5000
+
+user:
+  service:
+    url: http://localhost:8080
+
+feign:
+  circuitbreaker:
+    enabled: true
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      userService:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: classpath:db_master.xml
+    enabled: true
+server:
+  port: 8080
