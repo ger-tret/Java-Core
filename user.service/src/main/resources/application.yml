@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/user_service
+    username: serviceuser
+    password: 123456789
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: classpath:db/db_master.xml
+    enabled: true
+  data:
+    redis:
+      port: 6379
+      host: localhost
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000  # 1 hour in ms
+      cache-null-values: false
+server:
+  port: 8080
