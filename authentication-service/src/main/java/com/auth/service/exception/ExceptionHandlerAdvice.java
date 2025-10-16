@@ -10,16 +10,23 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import javax.naming.AuthenticationException;
+import java.nio.file.AccessDeniedException;
 import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
+    private static final String MISMATCH_EXCEPTION_RESPONSE = "Invalid value %s for ID. Must be a valid ID.";
+    private static final String GENERAL_ERROR = "An error occurred on the server.";
+    private static final String AUTHENTICATION_FAILURE = "Authentication failed.";
+    private static final String FORBIDDEN_FAILURE = "Access denied.";
+
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponseDto> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
         String errorMessage = "";
         if (("id").equals(ex.getPropertyName())) {
-            errorMessage = "Invalid value '" + ex.getValue() + "' for ID. Must be a positive integer";
+            errorMessage =  String.format(MISMATCH_EXCEPTION_RESPONSE, ex.getValue());
         }
         else {
             errorMessage = ex.getMessage();
@@ -41,6 +48,17 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGeneralException() {
-        return new ResponseEntity<>(new ErrorResponseDto("An error occurred on the server.", HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorResponseDto(GENERAL_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthenticationException(AuthenticationException ex) {
+        return new ResponseEntity<>(new ErrorResponseDto(AUTHENTICATION_FAILURE,HttpStatus.UNAUTHORIZED.value()), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(AccessDeniedException ex) {
+        return new ResponseEntity<>(new ErrorResponseDto(FORBIDDEN_FAILURE, HttpStatus.FORBIDDEN.value()), HttpStatus.FORBIDDEN);
     }
 }
+

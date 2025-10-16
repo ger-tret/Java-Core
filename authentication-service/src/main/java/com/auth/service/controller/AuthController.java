@@ -1,7 +1,7 @@
 package com.auth.service.controller;
 
-import com.auth.service.model.dto.IdDto;
 import com.auth.service.model.dto.request.LoginRequestDto;
+import com.auth.service.model.dto.request.RefreshTokenRequestDto;
 import com.auth.service.model.dto.request.RegisterRequestDto;
 import com.auth.service.model.dto.response.TokenResponseDto;
 import com.auth.service.services.JwtTokenService;
@@ -18,24 +18,27 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/auth")
 @Validated
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
+@RequiredArgsConstructor
 public class AuthController {
 
     private final UserService userService;
     private final JwtTokenService jwtTokenService;
+    private final UserServiceRecieveClient userServiceRecieveClient;
 
     @PostMapping("/register")
-    public ResponseEntity<IdDto> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
-        return ResponseEntity.ok(new IdDto(userService.registerUser(registerRequestDto)));
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDto registerRequestDto) {
+        userServiceRecieveClient.createUser(registerRequestDto);
+        return ResponseEntity.ok(userService.registerUser(registerRequestDto));
     }
 
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDto> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
-        TokenResponseDto tokenResponseDto = new TokenResponseDto();
-        tokenResponseDto.setAccessToken(jwtTokenService.generateAccessToken(loginRequestDto.getLogin(), loginRequestDto.getUserRoles()));
-        tokenResponseDto.setAccessTokenExpiresAt(jwtTokenService.getExpirationDateFromToken(tokenResponseDto.getAccessToken()));
-        tokenResponseDto.setRefreshToken(jwtTokenService.generateRefreshToken(loginRequestDto.getLogin(), loginRequestDto.getUserRoles()));
-        return ResponseEntity.ok(tokenResponseDto);
+        return ResponseEntity.ok(jwtTokenService.generateTokenResponse(loginRequestDto));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<TokenResponseDto> refreshToken(@Valid @RequestBody RefreshTokenRequestDto request) {
+        return ResponseEntity.ok((jwtTokenService.refreshToken(request)));
     }
 
 

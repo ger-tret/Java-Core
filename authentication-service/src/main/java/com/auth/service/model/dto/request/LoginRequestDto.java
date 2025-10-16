@@ -15,6 +15,4 @@ public class LoginRequestDto {
     @NotBlank
     private String password;
 
-    @NotBlank
-    private List<UserRole> userRoles;
 }

@@ -1,7 +1,7 @@
 package com.auth.service.model.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.*;
+import lombok.Data;
 
 @Data
 public class RefreshTokenRequestDto {

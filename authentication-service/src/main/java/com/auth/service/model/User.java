@@ -2,7 +2,7 @@ package com.auth.service.model;
 
 import com.auth.service.model.enums.UserRole;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
 
 import java.util.List;
 
