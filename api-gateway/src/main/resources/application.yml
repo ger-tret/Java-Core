@@ -1,0 +1,164 @@
+BASE_URL: http://localhost:8089
+ORDER_SERVICE_BASE_URL: lb://order
+USER_SERVICE_BASE_URL: lb://user
+AUTHENTICATION_SERVICE_BASE_URL: lb://auth
+PAYMENT_SERVICE_BASE_URL: lb://payment
+
+server:
+  port: 8089
+  netty:
+    idle-timeout: 10s
+    connection-timeout: 10s
+
+spring:
+  application:
+    name: api-gateway
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      indent-output: true
+
+eureka:
+  client:
+    registerWithEureka: false
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      server:
+        webflux:
+          httpclient:
+            connect-timeout: 10000
+            response-timeout: 10s
+            pool:
+              max-idle-time: 5s
+          default-filters:
+            - StripPrefix=1
+            - name: CacheRequestBody
+              args:
+                bodyClass: java.lang.String
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 40
+                redis-rate-limiter.burstCapacity: 80
+                redis-rate-limiter.requestedTokens: 1
+
+
+          routes:
+            - id: order
+              predicates:
+                - Path=/order/**
+              uri: ${ORDER_SERVICE_BASE_URL}
+              filters:
+                - JWTFilter=RSA256,HS256
+                - RemoveResponseHeader=X-Powered-By
+
+
+            - id: user
+              predicates:
+                - Path=/user/**
+              filters:
+                - JWTFilter=RSA256,HS256
+                - RemoveResponseHeader=X-Powered-By
+              uri: ${USER_SERVICE_BASE_URL}
+
+
+
+            - id: payment
+              predicates:
+                - Path=/payment/**
+              filters:
+                - JWTFilter=RSA256,HS256
+                - RemoveResponseHeader=X-Powered-By
+              uri: ${PAYMENT_SERVICE_BASE_URL}
+
+
+            - id: auth
+              predicates:
+                - Path=/auth/**
+              uri: ${AUTHENTICATION_SERVICE_BASE_URL}
+              filters:
+                -JWTFilter=RSA256, HS256
+                - RemoveResponseHeader=X-Powered-By
+
+
+            - id: register
+              predicates:
+                  - Path=/gateway/register
+              uri: ${BASE_URL}
+
+            - id: register
+              predicates:
+                  - Path=/auth/register
+              uri: ${AUTHENTICATION_SERVICE_BASE_URL}
+
+            - id: register
+              predicates:
+                - Path=/user/register
+              uri: ${USER_SERVICE_BASE_URL}
+
+            - id: login
+              predicates:
+                - Path=/auth/login
+              uri: ${AUTHENTICATION_SERVICE_BASE_URL}
+
+            - id: login
+              predicates:
+                - Path=/user/login
+              uri: ${USER_SERVICE_BASE_URL}
+
+
+  main:
+    web-application-type: reactive
+
+  docker:
+    compose:
+      enabled: true
+
+  config:
+    import: optional:file:.env[.properties]
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  codec:
+    max-in-memory-size: 10MB
+  reactor:
+    context-propagation: auto
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      access: true
+  tracing:
+    sampling:
+      probability: 1.0 # 1.0 means 100% of requests are traced
+
+logging:
+  level:
+    com.mb.apigateway.config: INFO
+    com.mb.apigateway.filter: INFO
+    org.springframework.cloud.gateway: INFO
+    org.springframework.http.server.reactive: INFO
+    org.springframework.web.reactive: INFO
+  request:
+    enabled: true
+    includeRequestBody: true
+    includeResponseBody: true
+    maxBodySize: 10000
