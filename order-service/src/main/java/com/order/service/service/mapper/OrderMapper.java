@@ -16,6 +16,7 @@ public interface OrderMapper {
     @Mapping(target = "orderId", ignore = true)
     @Mapping(target = "orderStatus", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
+    @Mapping(target = "userId", ignore = true)
     OrderDto toDto(CreateOrderRequestDto createOrderRequestDto);
 
     List<OrderDto> orderToDTOList(List<Order> orders);

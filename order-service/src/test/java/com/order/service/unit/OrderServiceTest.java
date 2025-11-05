@@ -3,6 +3,7 @@ package com.order.service.unit;
 
 import com.order.service.client.UserServiceClient;
 import com.order.service.model.Order;
+import com.order.service.model.dto.CreateOrderRequestDto;
 import com.order.service.model.dto.ItemDto;
 import com.order.service.model.dto.OrderDto;
 import com.order.service.model.enums.OrderStatus;
@@ -37,10 +38,11 @@ class OrderServiceTest {
 
     private Order testOrder;
     private OrderDto testOrderDto;
+    private CreateOrderRequestDto testCreateOrderRequestDto;
 
     @BeforeEach
     void setUp() {
-        orderService = new OrderServiceImpl(orderRepository, orderMapper);
+        orderService = new OrderServiceImpl(orderRepository, userServiceClient, orderMapper);
 
         testOrder = new Order();
         testOrder.setOrderId(1L);
@@ -53,6 +55,8 @@ class OrderServiceTest {
         testOrderDto.setOrderId(1L);
         testOrderDto.setOrderStatus(OrderStatus.PENDING);
         testOrderDto.setCreationDate(new Date());
+
+        testCreateOrderRequestDto = new CreateOrderRequestDto("email@email.com", List.of(new ItemDto()));
     }
 
     @Test
@@ -61,7 +65,7 @@ class OrderServiceTest {
         when(orderRepository.save(testOrder)).thenReturn(testOrder);
 
         
-        Long result = orderService.createOrder(testOrderDto);
+        Long result = orderService.createOrder(testCreateOrderRequestDto);
 
         
         assertEquals(1L, result);

@@ -30,7 +30,7 @@ public class ExceptionHandlerAdvice {
     }
 
     @ExceptionHandler(OrderAlreadyExists.class)
-    public ResponseEntity<ErrorResponseDto> OrderAlreadyExistsException(OrderAlreadyExists e) {
+    public ResponseEntity<ErrorResponseDto> handleAlreadyExistingOrder(OrderAlreadyExists e) {
         return new ResponseEntity<>(new ErrorResponseDto(e.getMessage(), HttpStatus.CONFLICT.value()), HttpStatus.CONFLICT);
     }
 

@@ -3,14 +3,12 @@ package com.order.service.controller;
 import com.order.service.client.UserServiceClient;
 import com.order.service.model.Order;
 import com.order.service.model.dto.CreateOrderRequestDto;
-import com.order.service.model.dto.IdDto;
 import com.order.service.model.dto.OrderDto;
 import com.order.service.model.enums.OrderStatus;
 import com.order.service.service.OrderService;
 import com.order.service.service.mapper.OrderMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +25,7 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderDto> createOrder(@Valid @RequestBody CreateOrderRequestDto createOrderRequest) {
-       Long id = orderService.createOrder(mapper.toDto(createOrderRequest));
+       Long id = orderService.createOrder(createOrderRequest);
        return ResponseEntity.ok(orderService.findOrderById(id));
     }
 
@@ -48,12 +46,12 @@ public class OrderController {
 
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<IdDto> updateOrderStatus(@PathVariable("id") Long id, @RequestParam String status) {
-        return ResponseEntity.ok(new IdDto(orderService.updateOrderStatus(id, OrderStatus.valueOf(status))));
+    public ResponseEntity<Long> updateOrderStatus(@PathVariable("id") Long id, @RequestParam String status) {
+        return ResponseEntity.ok((orderService.updateOrderStatus(id, OrderStatus.valueOf(status))));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<IdDto> deleteOrder(@PathVariable("id") Long id) {
-        return ResponseEntity.ok(new IdDto(orderService.deleteOrder(id)));
+    public ResponseEntity<Long> deleteOrder(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(orderService.deleteOrder(id));
     }
 }

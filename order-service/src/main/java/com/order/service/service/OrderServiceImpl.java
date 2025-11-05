@@ -1,16 +1,16 @@
 package com.order.service.service;
 
 
+import com.order.service.client.UserServiceClient;
 import com.order.service.model.Order;
-import com.order.service.model.dto.IdDto;
+import com.order.service.model.dto.CreateOrderRequestDto;
 import com.order.service.model.dto.OrderDto;
 import com.order.service.model.enums.OrderStatus;
 import com.order.service.repository.OrderRepository;
 import com.order.service.service.mapper.OrderMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,12 +21,17 @@ import java.util.NoSuchElementException;
 public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository orderRepository;
+    private final UserServiceClient userServiceClient;
     private final OrderMapper orderMapper;
 
     @Override
     @Transactional
-    public Long createOrder(OrderDto orderDto) {
-        return new IdDto(orderRepository.save(orderMapper.toEntity(orderDto)).getOrderId()).id();
+    public Long createOrder(CreateOrderRequestDto createOrderRequestDto) {
+        Long id = userServiceClient.getUserByEmail(createOrderRequestDto.getEmail()).getUserId();
+        Order order = orderMapper.toEntity(orderMapper.toDto(createOrderRequestDto));
+        order.setOrderId(id);
+       return  orderRepository.save(order).getOrderId();
+
     }
 
     @Override
@@ -37,11 +42,11 @@ public class OrderServiceImpl implements OrderService{
     @Override
     public List<Order> findOrdersByIdCsv(String idCsv) {
         List<Long> ids = Arrays.stream(idCsv.split(",")).map(Long::parseLong).toList();
-        List<Order> foundOrders = orderRepository.findAllById(ids).stream().toList();
-        return foundOrders;
+        return orderRepository.findAllById(ids).stream().toList();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Order> findOrdersByStatus(String status) {
         return orderRepository.findAllByStatus(status);
     }

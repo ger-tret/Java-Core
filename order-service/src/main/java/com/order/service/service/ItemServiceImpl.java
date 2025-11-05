@@ -7,7 +7,6 @@ import com.order.service.repository.ItemRepository;
 import com.order.service.service.mapper.ItemMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
@@ -35,16 +34,15 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public List<Item> findItemsByIdCsv(String idCsv) {
         List<Long> ids = Arrays.stream(idCsv.split(",")).map(Long::parseLong).toList();
-        List<Item> foundItems = itemRepository.findAllById(ids).stream().toList();
-        return foundItems;
+        return itemRepository.findAllById(ids).stream().toList();
     }
 
     @Override
     @Transactional
     public Long updateItem(Long id, ItemDto updatedItem) {
         return itemRepository.findById(id).map(item -> {
-            item.setName(updatedItem.getName() == item.getName() ? item.getName() : updatedItem.getName());
-            item.setPrice(updatedItem.getPrice() == item.getPrice() ? item.getPrice() : updatedItem.getPrice());
+            item.setName(updatedItem.getName().equals(item.getName()) ? item.getName() : updatedItem.getName());
+            item.setPrice(updatedItem.getPrice().equals(item.getPrice()) ? item.getPrice() : updatedItem.getPrice());
             return itemRepository.save(item);
         }).orElseThrow(() -> new NoSuchElementException("Item for ID= " + id + " not found")).getItemId();
     }
