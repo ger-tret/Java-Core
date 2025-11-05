@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="1" author="german.tretyakevich">
+        <sql>CREATE TYPE order_status AS ENUM ('PENDING','AWAITING_PAYMENT','AWAITING_FULFILLMENT', 'SHIPPED', 'COMPLETED', 'CANCELLED', 'DECLINED')</sql>
+    </changeSet>
+    <changeSet id="1-initial-orders-structure" author="german.tretyakevich">
+        <createTable tableName="orders">
+            <column name="order_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="users_id"></constraints>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="order_status" type="order_status">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="creation_date" type="DATE">
+                <constraints nullable="false"></constraints>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1-1-index-creation-for-orders" author="german.tretyakevich">
+        <createIndex tableName="users" indexName="orders_user_and_order_id_index">
+            <column name="order_id"></column>
+            <column name="user_id"></column>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2-initial-items-scheme" author="german.tretyakevich">
+        <createTable tableName="items">
+            <column name="item_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="card_id"></constraints>
+            </column>
+            <column name="name" type="VARCHAR(250)">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="price" type="VARCHAR(250)">
+                <constraints nullable="false"></constraints>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2-1-index-creation-for-items" author="german.tretyakevich">
+        <createIndex tableName="items" indexName="item_id_and_name">
+            <column name="item_id"></column>
+            <column name="name"></column>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
